@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "dbsetup": "node -r dotenv/config ./src/scripts/schema.js",
+    "addPitches": "node -r dotenv/config ./src/scripts/addPitches.js",
     "lint": "next lint"
   },
   "dependencies": {
