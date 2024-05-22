@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "dbsetup": "node -r dotenv/config ./src/scripts/schema.js",
     "lint": "next lint"
   },
   "dependencies": {
@@ -16,8 +17,11 @@
     "@types/papaparse": "^5.3.14",
     "@vercel/postgres": "^0.8.0",
     "csv": "^6.3.9",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.30.10",
     "next": "14.2.3",
     "papaparse": "^5.4.1",
+    "postgres": "^3.4.4",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -26,6 +30,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "drizzle-kit": "^0.21.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "postcss": "^8",
