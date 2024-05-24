@@ -1,6 +1,7 @@
 //import {Card, CategoryBar, Color} from '@tremor/react';
 //import Papa from 'papaparse';
 import {Card, ProgressBar} from '@tremor/react'
+import { fetchCardData } from './data';
 
 // async function GetFromDate({searchDate}: {searchDate: string}) {
 //
@@ -24,27 +25,28 @@ import {Card, ProgressBar} from '@tremor/react'
 //     </div>
 //   )
 // }
-export default function Home() {
+export default async function Home() {
+  const cd = await fetchCardData();
   return (
     <main>
       <div className='grid grid-cols-2 gap-4 pt-8'>
         <Card className='flex-1 justify-center m-4'>
           Swing decisions
-          <ProgressBar className='py-2' value={60} label='Swing' />
-          <ProgressBar className='py-2 pl-2' value={60} label='Whiff' />
-          <ProgressBar className='py-2 pl-2' value={60} label='Foul' />
-          <ProgressBar className='py-2 pl-2' value={60} label='In play' />
-          <ProgressBar className='py-2' value={60} label='Take' />
-          <ProgressBar className='py-2 pl-2' value={60} label='Ball' />
-          <ProgressBar className='py-2 pl-2' value={60} label='Called Strike' />
+          <ProgressBar className='py-2' value={(cd.swing/cd.total) * 100} label='Swing' />
+          <ProgressBar className='py-2 pl-2' value={(cd.whiff/cd.total) * 100} label='Whiff' />
+          <ProgressBar className='py-2 pl-2' value={(cd.foul/cd.total) * 100} label='Foul' />
+          <ProgressBar className='py-2 pl-2' value={(cd.in_play/cd.total) * 100} label='In play' />
+          <ProgressBar className='py-2' value={(cd.take/cd.total) * 100} label='Take' />
+          <ProgressBar className='py-2 pl-2' value={(cd.ball/cd.total) * 100} label='Ball' />
+          <ProgressBar className='py-2 pl-2' value={(cd.strike/cd.total) * 100} label='Strike' />
         </Card>
         <Card className='flex-1 justify-center m-4'>
           Balls & Strikes
-          <ProgressBar className='py-2' value={60} label='Strike' />
-          <ProgressBar className='py-2 pl-2' value={60} label='Swinging' />
-          <ProgressBar className='py-2 pl-2' value={60} label='Called' />
-          <ProgressBar className='py-2 pl-2' value={60} label='Foul' />
-          <ProgressBar className='py-2' value={60} label='Ball' />
+          <ProgressBar className='py-2' value={(cd.strike/cd.total) * 100} label='Strike' />
+          <ProgressBar className='py-2 pl-2' value={(cd.whiff/cd.total) * 100} label='Whiff' />
+          <ProgressBar className='py-2 pl-2' value={(cd.foul/cd.total) * 100} label='Foul' />
+          <ProgressBar className='py-2 pl-2' value={(cd.called_strike/cd.total) * 100} label='Called' />
+          <ProgressBar className='py-2' value={(cd.ball/cd.total) * 100} label='Ball' />
         </Card>
       </div>
     </main>
