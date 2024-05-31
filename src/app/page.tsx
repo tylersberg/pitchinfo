@@ -25,35 +25,37 @@ import { fetchCardData } from './data';
 //     </div>
 //   )
 // }
+function PercentBar({label, value, total}: {label: string, value: number, total: number}) {
+  return (<ProgressBar className='py-2' value={(value / total) * 100} label={label} />)
+}
 export default async function Home() {
   const cd = await fetchCardData();
-  return (
-    <main>
-      <div className='flex'>
-        <h1 className=''>
+  return (    <main>
+      <div className='flex justify-between mx-8 mt-6'>
+        <h1 className='text-xl pl-8'>
           Pitchinfo
         </h1>
-        <input>
+        <input className='rounded' type='search'>
         </input>
       </div>
       <div className='flex'>
         <Card className='flex-1 justify-center m-4'>
           Swing decisions
-          <ProgressBar className='py-2' value={(cd.swing/cd.total) * 100} label='Swing' />
-          <ProgressBar className='py-2 pl-2' value={(cd.whiff/cd.total) * 100} label='Whiff' />
-          <ProgressBar className='py-2 pl-2' value={(cd.foul/cd.total) * 100} label='Foul' />
-          <ProgressBar className='py-2 pl-2' value={(cd.in_play/cd.total) * 100} label='In play' />
-          <ProgressBar className='py-2' value={(cd.take/cd.total) * 100} label='Take' />
-          <ProgressBar className='py-2 pl-2' value={(cd.ball/cd.total) * 100} label='Ball' />
-          <ProgressBar className='py-2 pl-2' value={(cd.strike/cd.total) * 100} label='Strike' />
+          <PercentBar label='Swing' value={cd.swing} total={cd.total}/>
+          <PercentBar label='Whiff'  value={cd.whiff} total={cd.total}/>
+          <PercentBar label='Foul'  value={cd.foul} total={cd.total}/>
+          <PercentBar label='In play'  value={cd.in_play} total={cd.total}/>
+          <PercentBar label='Take'  value={cd.take} total={cd.total}/>
+          <PercentBar label='Ball'  value={cd.ball} total={cd.total}/>
+          <PercentBar label='Strike'  value={cd.strike} total={cd.total}/>
         </Card>
         <Card className='flex-1 justify-center m-4'>
           Balls & Strikes
-          <ProgressBar className='py-2' value={(cd.strike/cd.total) * 100} label='Strike' />
-          <ProgressBar className='py-2 pl-2' value={(cd.whiff/cd.total) * 100} label='Whiff' />
-          <ProgressBar className='py-2 pl-2' value={(cd.foul/cd.total) * 100} label='Foul' />
-          <ProgressBar className='py-2 pl-2' value={(cd.called_strike/cd.total) * 100} label='Called' />
-          <ProgressBar className='py-2' value={(cd.ball/cd.total) * 100} label='Ball' />
+          <PercentBar label='Strike'  value={cd.strike} total={cd.total}/>
+          <PercentBar label='Whiff'  value={cd.whiff} total={cd.total}/>
+          <PercentBar label='Foul'  value={cd.foul} total={cd.total}/>
+          <PercentBar label='Called'  value={cd.called_strike} total={cd.total}/>
+          <PercentBar label='Ball'  value={cd.ball} total={cd.total}/>
         </Card>
       </div>
     </main>
