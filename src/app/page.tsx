@@ -29,7 +29,14 @@ export default async function Home() {
   const cd = await fetchCardData();
   return (
     <main>
-      <div className='grid grid-cols-2 gap-4 pt-8'>
+      <div className='flex'>
+        <h1 className=''>
+          Pitchinfo
+        </h1>
+        <input>
+        </input>
+      </div>
+      <div className='flex'>
         <Card className='flex-1 justify-center m-4'>
           Swing decisions
           <ProgressBar className='py-2' value={(cd.swing/cd.total) * 100} label='Swing' />
