@@ -11,7 +11,7 @@ main().catch((err) => {
 async function main() {
   const client = await db.connect();
 
-  const pitchData = await getFromDate('2024-05-21');
+  const pitchData = await getFromDate('2024-05-22');
   console.log(pitchData.length);
   await insertPitchData(client, pitchData);
 
@@ -38,7 +38,7 @@ async function insertPitchData(client, pitchData) {
 
   console.log(`Beginning game data insert`);
 
-  // const insertedGames = await Promise.all(
+  // await Promise.all(
   //   pitchData.map(
   //     (pitch) => client.sql`
   //     INSERT INTO games (game_pk, game_date, game_type, home_team, away_team, game_year)

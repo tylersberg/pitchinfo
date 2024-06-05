@@ -1,5 +1,6 @@
 const Papa = require('papaparse');
 const { db } = require('@vercel/postgres');
+
 const fs = require('fs')
 
 main().catch((err) => {
@@ -30,8 +31,9 @@ async function main() {
   ]
   const playerInfo = readPlayerFiles(playerFiles);
   console.log(playerInfo.length);
-  // const client = await db.connect();
-  // await client.end();
+  const client = await db.connect();
+  await insertPlayerData(client, playerInfo)
+  await client.end();
 
 };
 
@@ -40,28 +42,58 @@ function readPlayerFiles(playerFiles) {
   for (const file of playerFiles) {
     var players = fs.readFileSync(file, 'utf8');
     players = Papa.parse(players, {header: true, delimiter: ',', dynamicTyping: true}).data;
-    console.log(players.length);
+    console.log(`Players before filtering for MLBAM id: ${players.length}`);
     players = players.filter(player => !!player.key_mlbam);
-    console.log(players.length);
+    console.log(`Players after filtering for MLBAM id: ${players.length}`);
     allPlayers.push(...players)
   }
 
   return allPlayers;
 };
 
-async function insertPitchData(client, pitchData) {
+async function insertPlayerData(client, players) {
 
   console.log(`Beginning player data insert`);
+  try {
+    const pitcherIDs = await client.sql`SELECT DISTINCT pitcher FROM pitches`;
+    const batterIDs = await client.sql`SELECT DISTINCT batter FROM pitches`;
 
+    var playerIDSet = new Set()
+    pitcherIDs.rows.forEach(player => playerIDSet.add(player.pitcher));
+    batterIDs.rows.forEach(player => playerIDSet.add(player.batter));
 
+    players = players.filter(player => playerIDSet.has(player.key_mlbam));
+    console.log(`Players for which there is pitch data: ${players.length}`);
+
+    await Promise.all(
+      players.map(
+        (player) => client.sql`
+          INSERT INTO players (
+            key_uuid,
+            key_mlbam,
+            key_bbref_minors,
+            name_last,
+            name_first,
+            name_given,
+            birth_year,
+            birth_month,
+            birth_day)
+          VALUES (
+            ${player.key_uuid},
+            ${player.key_mlbam},
+            ${player.key_bbref_minors},
+            ${player.name_last},
+            ${player.name_first},
+            ${player.name_given},
+            ${player.birth_year},
+            ${player.birth_month},
+            ${player.birth_day});`
+      )
+    );
+  } catch(error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch data.');
+  }
   console.log(`Player data insert complete`);
-
-  // await Promise.all(
-  //   pitchData.map(
-  //     (pitch) => client.sql`
-  //   `,
-  //   ),
-  // );
-
 };
 
