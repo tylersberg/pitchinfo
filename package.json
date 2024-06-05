@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "addPitches": "node -r dotenv/config ./src/scripts/addPitches.js",
+    "addPlayerInfo": "node -r dotenv/config ./src/scripts/addPlayerInfo.js",
     "lint": "next lint"
   },
   "dependencies": {
