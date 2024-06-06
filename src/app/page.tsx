@@ -3,28 +3,6 @@
 import {Card, ProgressBar} from '@tremor/react'
 import { fetchCardData } from './data';
 
-// async function GetFromDate({searchDate}: {searchDate: string}) {
-//
-//   const searchURL = `https://baseballsavant.mlb.com/statcast_search/csv?all=true&game_date_gt=${searchDate}&type=details`
-//
-//   const pitchData =await fetch(searchURL)
-//     .then((res) => res.text())
-//     // Resolve duplicate Headers
-//     .then(text => text.replace('pitcher', 'pitcher_duplicate_header'))
-//     .then(text => text.replace('fielder_2', 'catcher'))
-//     .then((csv) => Papa.parse(csv, {header: true, delimiter: ',', dynamicTyping: true}))
-//
-//   const firstPitch = pitchData.data[0] as Object;
-//   let columnList: React.JSX.Element[] = [];
-//   for (const key in firstPitch) {
-//     columnList.push(<li key={key}>{`${key}: ${firstPitch[key as keyof Object]}`}</li>)
-//   }
-//   return (
-//     <div>
-//       <ul>{columnList}</ul>
-//     </div>
-//   )
-// }
 function PercentBar({label, value, total}: {label: string, value: number, total: number}) {
   return (
     <div>
@@ -39,13 +17,6 @@ function PercentBar({label, value, total}: {label: string, value: number, total:
 export default async function Home() {
   const cd = await fetchCardData();
   return (    <main>
-      <div className='flex justify-between mx-8 mt-6'>
-        <h1 className='text-xl pl-8'>
-          Pitchinfo
-        </h1>
-        <input className='rounded' type='search'>
-        </input>
-      </div>
       <div className='flex'>
         <Card className='flex-1 m-4'>
           <h1 className='text-center'>Swing decisions</h1>
