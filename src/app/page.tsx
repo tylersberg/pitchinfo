@@ -29,7 +29,7 @@ export default async function Home() {
           <PercentBar label='Take'  value={cd.take} total={cd.total}/>
           <div className='pl-4'>
             <PercentBar label='Ball'  value={cd.ball} total={cd.total}/>
-            <PercentBar label='Strike'  value={cd.strike} total={cd.total}/>
+            <PercentBar label='Strike'  value={cd.called_strike} total={cd.total}/>
           </div>
         </Card>
         <Card className='flex-1 m-4'>
