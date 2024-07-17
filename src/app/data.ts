@@ -1,7 +1,18 @@
 'use server'
 import { sql } from 'drizzle-orm';
 import db from '@/db/drizzle';
-import {pitches} from '@/db/schema';
+import {pitches, players} from '@/db/schema';
+
+export async function fetchPlayers() {
+  try {
+    const playerList = await db.select().from(players);
+    console.log(playerList);
+    return playerList;
+  } catch(error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch player data.');
+  }
+}
 
 export async function fetchCardData() {
   try {
