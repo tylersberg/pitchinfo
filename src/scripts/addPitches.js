@@ -1,5 +1,5 @@
 const Papa = require('papaparse');
-const { db } = require('@vercel/postgres');
+const { db, sql } = require('@vercel/postgres');
 
 main().catch((err) => {
   console.error(
@@ -11,7 +11,7 @@ main().catch((err) => {
 async function main() {
   const client = await db.connect();
 
-  const pitchData = await getFromDate('2024-05-22');
+  const pitchData = await getFromDate('2024-07-12');
   console.log(pitchData.length);
   await insertPitchData(client, pitchData);
 
@@ -21,7 +21,7 @@ async function main() {
 
 async function getFromDate(searchDate) {
 
-  const searchURL = `https://baseballsavant.mlb.com/statcast_search/csv?all=true&game_date_gt=${searchDate}&type=details`
+  const searchURL = `https://baseballsavant.mlb.com/statcast_search/csv?all=true&game_date_gt=${searchDate}&game_date_lt=${searchDate}&type=details`
 
   const pitchData =await fetch(searchURL)
     .then((res) => res.text())
@@ -37,31 +37,40 @@ async function getFromDate(searchDate) {
 async function insertPitchData(client, pitchData) {
 
   console.log(`Beginning game data insert`);
+  let games = new Array();
+  let gameSet = new Set();
+  for (const pitch of pitchData) {
+    if (!gameSet.has(pitch.game_pk)) {
+      gameSet.add(pitch.game_pk)
+      games.push({
+        game_pk : pitch.game_pk, 
+        game_date : pitch.game_date, 
+        game_type : pitch.game_type, 
+        home_team : pitch.home_team, 
+        away_team : pitch.away_team, 
+        game_year : pitch.game_year
+        });
+    }
+  }
 
-  // await Promise.all(
-  //   pitchData.map(
-  //     (pitch) => client.sql`
-  //     INSERT INTO games (game_pk, game_date, game_type, home_team, away_team, game_year)
-  //     VALUES (
-  //       ${pitch.game_pk}, 
-  //       ${pitch.game_date}, 
-  //       ${pitch.game_type}, 
-  //       ${pitch.home_team}, 
-  //       ${pitch.away_team}, 
-  //       ${pitch.game_year})
-  //     ON CONFLICT (game_pk) DO NOTHING;
-  //   `,
-  //   ),
-  // );
+  await sql.query(`
+      INSERT INTO games (game_pk, game_date, game_type, home_team, away_team, game_year) VALUES
+      ${games.map((game) => {
+        return `(
+          ${game.game_pk}, 
+          '${game.game_date}', 
+          '${game.game_type}', 
+          '${game.home_team}', 
+          '${game.away_team}', 
+          '${game.game_year}')`;
+      }).join()} ON CONFLICT DO NOTHING`);
 
   console.log(`Game data insert complete`);
   console.log(`Pitch data insert start`);
 
   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-  await Promise.all(
-    pitchData.map(
-      (pitch) => client.sql`
-      INSERT INTO pitches (
+  await sql.query(
+      `INSERT INTO pitches (
         id,
         player_name,
         batter,
@@ -144,26 +153,25 @@ async function insertPitchData(client, pitchData) {
         babip_value,
         iso_value,
         launch_speed_angle
-        )
-      VALUES (
+        ) VALUES ${pitchData.map((pitch) => {return `(
         uuid_generate_v4(),
-        ${pitch.player_name},
+        '${!!pitch.player_name ? pitch.player_name.replaceAll("'","''") : ''}',
         ${pitch.batter},
         ${pitch.catcher},
-        ${pitch.pitch_type},
-        ${pitch.pitch_name},
+        '${pitch.pitch_type}',
+        '${pitch.pitch_name}',
         ${pitch.release_speed},
         ${pitch.release_pos_x},
         ${pitch.release_pos_z},
-        ${pitch.type},
+        '${pitch.type}',
         ${pitch.balls},
         ${pitch.strikes},
-        ${pitch.events},
-        ${pitch.description},
+        '${!!pitch.events ? pitch.events.replaceAll("'","''"): ''}',
+        '${!!pitch.description ? pitch.description.replaceAll("'","''") : ''}',
         ${pitch.zone},
-        ${pitch.des},
-        ${pitch.stand},
-        ${pitch.p_throws},
+        '${!!pitch.des ? pitch.des.replaceAll("'","''") : ''}',
+        '${pitch.stand}',
+        '${pitch.p_throws}',
         ${pitch.hit_location},
         ${pitch.pfx_x},
         ${pitch.pfx_z},
@@ -174,7 +182,7 @@ async function insertPitchData(client, pitchData) {
         ${pitch.on_1b},
         ${pitch.game_pk},
         ${pitch.inning},
-        ${pitch.inning_topbot},
+        '${pitch.inning_topbot}',
         ${pitch.outs_when_up},
         ${pitch.at_bat_number},
         ${pitch.pitch_number},
@@ -208,13 +216,13 @@ async function insertPitchData(client, pitchData) {
         ${pitch.fielder_7},
         ${pitch.fielder_8},
         ${pitch.fielder_9},
-        ${pitch.if_fielding_alignment},
-        ${pitch.of_fielding_alignment},
+        '${pitch.if_fielding_alignment}',
+        '${pitch.of_fielding_alignment}',
         ${pitch.delta_home_win_exp},
         ${pitch.delta_run_exp},
         ${pitch.bat_speed},
         ${pitch.swing_length},
-        ${pitch.bb_type},
+        '${pitch.bb_type}',
         ${pitch.hc_x},
         ${pitch.hc_y},
         ${pitch.sv_id},
@@ -227,11 +235,7 @@ async function insertPitchData(client, pitchData) {
         ${pitch.woba_denom},
         ${pitch.babip_value},
         ${pitch.iso_value},
-        ${pitch.launch_speed_angle}
-        );
-    `,
-    ),
-  );
+        '${pitch.launch_speed_angle}')`}).join()};`);
 
   console.log(`Pitch data insert end`);
 
