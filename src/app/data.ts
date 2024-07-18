@@ -2,6 +2,7 @@
 import { sql } from 'drizzle-orm';
 import db from '@/db/drizzle';
 import {pitches, players} from '@/db/schema';
+import { time, timeEnd } from 'console';
 
 export async function fetchPlayers() {
   try {
@@ -11,6 +12,18 @@ export async function fetchPlayers() {
   } catch(error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch player data.');
+  }
+}
+
+export async function fetchPitchList() {
+  try {
+    time();
+    const pitchList = await db.select().from(pitches);
+    timeEnd();
+    return pitchList;
+  } catch(error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch pitch data.');
   }
 }
 
