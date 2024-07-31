@@ -1,7 +1,9 @@
 //import {Card, CategoryBar, Color} from '@tremor/react';
 //import Papa from 'papaparse';
+'use server';
 import {Card, ProgressBar} from '@tremor/react'
-import { fetchCardData } from './data';
+import { fetchCardData, fetchPitchList } from './data';
+import Search from "./Search";
 
 function PercentBar({label, value, total}: {label: string, value: number, total: number}) {
   return (
@@ -16,7 +18,10 @@ function PercentBar({label, value, total}: {label: string, value: number, total:
 }
 export default async function Home() {
   const cd = await fetchCardData();
-  return (    <main>
+  //const pitches = await fetchPitchList();
+  return (    
+    <main>
+      <Search/>
       <div className='flex'>
         <Card className='flex-1 m-4'>
           <h1 className='text-center'>Swing decisions</h1>
