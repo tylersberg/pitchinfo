@@ -3,7 +3,6 @@
 'use server';
 import {Card, ProgressBar} from '@tremor/react'
 import { fetchCardData, fetchPitchList } from './data';
-import Search from "./Search";
 
 function PercentBar({label, value, total}: {label: string, value: number, total: number}) {
   return (
@@ -21,7 +20,6 @@ export default async function Home() {
   //const pitches = await fetchPitchList();
   return (    
     <main>
-      <Search/>
       <div className='flex'>
         <Card className='flex-1 m-4'>
           <h1 className='text-center'>Swing decisions</h1>
